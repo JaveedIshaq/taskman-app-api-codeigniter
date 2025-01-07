@@ -273,12 +273,12 @@ Content-Type: application/json
 
 Request:
 {
-    "category_id": 1,
-    "title": "New Task",
-    "description": "Task description",
-    "due_date": "2025-01-14 00:00:00",
-    "priority": "medium",
-    "status": "pending"
+    "title": "Complete API Documentation",
+    "description": "Write comprehensive API docs",
+    "due_date": "2025-01-14 17:00:00",
+    "priority": "high",
+    "status": "pending",
+    "category_id": "21"
 }
 
 Response (201 Created):

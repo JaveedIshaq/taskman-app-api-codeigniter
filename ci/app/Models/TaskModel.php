@@ -8,17 +8,17 @@ class TaskModel extends Model
 {
     protected $table = 'tasks';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['user_id', 'title', 'date', 'start_time', 'end_time', 'category_id', 'description'];
+    protected $allowedFields = ['user_id', 'title', 'description', 'due_date', 'priority', 'status', 'category_id'];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
-    protected $updatedField = false;
+    protected $updatedField = 'updated_at';
 
     protected $validationRules = [
         'user_id' => 'required|integer',
         'title' => 'required|min_length[3]|max_length[255]',
-        'date' => 'required|valid_date',
-        'start_time' => 'required',
-        'end_time' => 'required',
+        'due_date' => 'required|valid_date',
+        'priority' => 'permit_empty|in_list[low,medium,high]',
+        'status' => 'permit_empty|in_list[pending,in_progress,completed]',
         'category_id' => 'required|integer'
     ];
 

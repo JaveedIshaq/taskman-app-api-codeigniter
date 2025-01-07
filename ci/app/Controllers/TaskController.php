@@ -20,6 +20,7 @@ class TaskController extends ResourceController
     public function index()
     {
         $userId = $this->request->user->user_id;
+        
         $tasks = $this->model->getUserTasks($userId);
         return $this->respond([
             'status' => 200,
@@ -53,11 +54,11 @@ class TaskController extends ResourceController
         $data = [
             'user_id' => $this->request->user->user_id,
             'title' => $this->request->getVar('title'),
-            'date' => $this->request->getVar('date'),
-            'start_time' => $this->request->getVar('start_time'),
-            'end_time' => $this->request->getVar('end_time'),
-            'category_id' => $this->request->getVar('category_id'),
-            'description' => $this->request->getVar('description')
+            'description' => $this->request->getVar('description'),
+            'due_date' => $this->request->getVar('due_date'),
+            'priority' => $this->request->getVar('priority') ?? 'medium',
+            'status' => $this->request->getVar('status') ?? 'pending',
+            'category_id' => $this->request->getVar('category_id')
         ];
 
         if (!$this->model->validate($data)) {
