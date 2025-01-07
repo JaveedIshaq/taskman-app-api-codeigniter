@@ -1,16 +1,29 @@
 # API Documentation
 
-## Authentication Endpoints
+## Base URL
+```
+https://dev.farabicoders.com
+```
 
-### Register User
+## Authentication
+All API endpoints (except login and register) require JWT authentication. Include the JWT token in the Authorization header:
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+## Endpoints
+
+### Authentication
+
+#### Register User
 ```http
 POST /auth/register
 Content-Type: application/json
 
 Request:
 {
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Test User",
+    "email": "test@example.com",
     "password": "password123"
 }
 
@@ -18,32 +31,29 @@ Response (201 Created):
 {
     "status": 201,
     "message": "User registered successfully",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
     "user": {
         "id": 1,
-        "name": "John Doe",
-        "email": "john@example.com"
+        "name": "Test User",
+        "email": "test@example.com"
     }
 }
 
 Error Response (400 Bad Request):
 {
     "status": 400,
-    "messages": {
-        "email": "Email already exists",
-        "password": "Password must be at least 6 characters long"
-    }
+    "message": "Email already exists"
 }
 ```
 
-### Login
+#### Login User
 ```http
 POST /auth/login
 Content-Type: application/json
 
 Request:
 {
-    "email": "john@example.com",
+    "email": "test@example.com",
     "password": "password123"
 }
 
@@ -51,34 +61,145 @@ Response (200 OK):
 {
     "status": 200,
     "message": "Login successful",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
     "user": {
         "id": 1,
-        "name": "John Doe",
-        "email": "john@example.com"
+        "name": "Test User",
+        "email": "test@example.com"
     }
 }
 
 Error Response (401 Unauthorized):
 {
     "status": 401,
-    "message": "Invalid password"
+    "message": "Invalid credentials"
+}
+```
+
+### Categories
+
+#### Get All Categories
+```http
+GET /categories
+
+Response (200 OK):
+{
+    "status": 200,
+    "data": [
+        {
+            "id": 1,
+            "user_id": 1,
+            "name": "Work",
+            "description": "Work related tasks",
+            "created_at": "2025-01-07 15:46:38",
+            "updated_at": "2025-01-07 15:46:38"
+        }
+    ]
+}
+```
+
+#### Get Single Category
+```http
+GET /categories/{id}
+
+Response (200 OK):
+{
+    "status": 200,
+    "data": {
+        "id": 1,
+        "user_id": 1,
+        "name": "Work",
+        "description": "Work related tasks",
+        "created_at": "2025-01-07 15:46:38",
+        "updated_at": "2025-01-07 15:46:38"
+    }
 }
 
 Error Response (404 Not Found):
 {
     "status": 404,
-    "message": "User not found"
+    "message": "Category not found or access denied"
 }
 ```
 
-## Task Endpoints
-All task endpoints require authentication. Include the JWT token in the Authorization header:
+#### Create Category
 ```http
-Authorization: Bearer <your_jwt_token>
+POST /categories
+Content-Type: application/json
+
+Request:
+{
+    "name": "Personal",
+    "description": "Personal tasks and reminders"
+}
+
+Response (201 Created):
+{
+    "status": 201,
+    "message": "Category created successfully",
+    "data": {
+        "id": 2,
+        "user_id": 1,
+        "name": "Personal",
+        "description": "Personal tasks and reminders",
+        "created_at": "2025-01-07 15:46:38",
+        "updated_at": "2025-01-07 15:46:38"
+    }
+}
 ```
 
-### Get All Tasks
+#### Update Category
+```http
+PUT /categories/{id}
+Content-Type: application/json
+
+Request:
+{
+    "name": "Updated Name",
+    "description": "Updated description"
+}
+
+Response (200 OK):
+{
+    "status": 200,
+    "message": "Category updated successfully",
+    "data": {
+        "id": 1,
+        "user_id": 1,
+        "name": "Updated Name",
+        "description": "Updated description",
+        "created_at": "2025-01-07 15:46:38",
+        "updated_at": "2025-01-07 15:47:38"
+    }
+}
+
+Error Response (404 Not Found):
+{
+    "status": 404,
+    "message": "Category not found or access denied"
+}
+```
+
+#### Delete Category
+```http
+DELETE /categories/{id}
+
+Response (200 OK):
+{
+    "status": 200,
+    "message": "Category deleted successfully"
+}
+
+Error Response (404 Not Found):
+{
+    "status": 404,
+    "message": "Category not found or access denied"
+}
+```
+
+### Tasks
+
+#### Get All Tasks
 ```http
 GET /tasks
 
@@ -89,27 +210,21 @@ Response (200 OK):
         {
             "id": 1,
             "user_id": 1,
-            "title": "Meeting with Client",
-            "date": "2025-01-10",
-            "start_time": "09:00:00",
-            "end_time": "10:00:00",
             "category_id": 1,
-            "category_name": "Work",
-            "description": "Discuss project requirements",
-            "created_at": "2025-01-07 19:51:25"
-        },
-        // ... more tasks
+            "title": "Complete Project",
+            "description": "Finish the API documentation",
+            "due_date": "2025-01-14 00:00:00",
+            "priority": "high",
+            "status": "pending",
+            "created_at": "2025-01-07 15:46:38",
+            "updated_at": "2025-01-07 15:46:38",
+            "category_name": "Work"
+        }
     ]
-}
-
-Error Response (401 Unauthorized):
-{
-    "status": 401,
-    "message": "Access denied. Invalid or missing token."
 }
 ```
 
-### Get Single Task
+#### Get Single Task
 ```http
 GET /tasks/{id}
 
@@ -119,43 +234,38 @@ Response (200 OK):
     "data": {
         "id": 1,
         "user_id": 1,
-        "title": "Meeting with Client",
-        "date": "2025-01-10",
-        "start_time": "09:00:00",
-        "end_time": "10:00:00",
         "category_id": 1,
-        "category_name": "Work",
-        "description": "Discuss project requirements",
-        "created_at": "2025-01-07 19:51:25"
+        "title": "Complete Project",
+        "description": "Finish the API documentation",
+        "due_date": "2025-01-14 00:00:00",
+        "priority": "high",
+        "status": "pending",
+        "created_at": "2025-01-07 15:46:38",
+        "updated_at": "2025-01-07 15:46:38",
+        "category_name": "Work"
     }
-}
-
-Error Response (403 Forbidden):
-{
-    "status": 403,
-    "message": "You do not have permission to view this task"
 }
 
 Error Response (404 Not Found):
 {
     "status": 404,
-    "message": "Task not found"
+    "message": "Task not found or access denied"
 }
 ```
 
-### Create Task
+#### Create Task
 ```http
 POST /tasks
 Content-Type: application/json
 
 Request:
 {
-    "title": "Meeting with Client",
-    "date": "2025-01-10",
-    "start_time": "09:00:00",
-    "end_time": "10:00:00",
     "category_id": 1,
-    "description": "Discuss project requirements"
+    "title": "New Task",
+    "description": "Task description",
+    "due_date": "2025-01-14 00:00:00",
+    "priority": "medium",
+    "status": "pending"
 }
 
 Response (201 Created):
@@ -163,42 +273,30 @@ Response (201 Created):
     "status": 201,
     "message": "Task created successfully",
     "data": {
-        "id": 1,
+        "id": 2,
         "user_id": 1,
-        "title": "Meeting with Client",
-        "date": "2025-01-10",
-        "start_time": "09:00:00",
-        "end_time": "10:00:00",
         "category_id": 1,
-        "category_name": "Work",
-        "description": "Discuss project requirements",
-        "created_at": "2025-01-07 19:51:25"
-    }
-}
-
-Error Response (400 Bad Request):
-{
-    "status": 400,
-    "messages": {
-        "title": "The title field is required",
-        "date": "The date field must be a valid date"
+        "title": "New Task",
+        "description": "Task description",
+        "due_date": "2025-01-14 00:00:00",
+        "priority": "medium",
+        "status": "pending",
+        "created_at": "2025-01-07 15:46:38",
+        "updated_at": "2025-01-07 15:46:38"
     }
 }
 ```
 
-### Update Task
+#### Update Task
 ```http
 PUT /tasks/{id}
 Content-Type: application/json
 
 Request:
 {
-    "title": "Updated Meeting Title",
-    "date": "2025-01-11",
-    "start_time": "10:00:00",
-    "end_time": "11:00:00",
-    "category_id": 1,
-    "description": "Updated description"
+    "title": "Updated Task",
+    "description": "Updated description",
+    "status": "in_progress"
 }
 
 Response (200 OK):
@@ -208,31 +306,25 @@ Response (200 OK):
     "data": {
         "id": 1,
         "user_id": 1,
-        "title": "Updated Meeting Title",
-        "date": "2025-01-11",
-        "start_time": "10:00:00",
-        "end_time": "11:00:00",
         "category_id": 1,
-        "category_name": "Work",
+        "title": "Updated Task",
         "description": "Updated description",
-        "created_at": "2025-01-07 19:51:25"
+        "due_date": "2025-01-14 00:00:00",
+        "priority": "high",
+        "status": "in_progress",
+        "created_at": "2025-01-07 15:46:38",
+        "updated_at": "2025-01-07 15:47:38"
     }
-}
-
-Error Response (403 Forbidden):
-{
-    "status": 403,
-    "message": "You do not have permission to update this task"
 }
 
 Error Response (404 Not Found):
 {
     "status": 404,
-    "message": "Task not found"
+    "message": "Task not found or access denied"
 }
 ```
 
-### Delete Task
+#### Delete Task
 ```http
 DELETE /tasks/{id}
 
@@ -242,60 +334,32 @@ Response (200 OK):
     "message": "Task deleted successfully"
 }
 
-Error Response (403 Forbidden):
-{
-    "status": 403,
-    "message": "You do not have permission to delete this task"
-}
-
 Error Response (404 Not Found):
 {
     "status": 404,
-    "message": "Task not found"
+    "message": "Task not found or access denied"
 }
 ```
 
-## Database Schema
+## Error Responses
 
-### Users Table
-```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+### General Error Format
+```json
+{
+    "status": 400|401|403|404|500,
+    "message": "Error message description"
+}
 ```
 
-### Categories Table
-```sql
-CREATE TABLE categories (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
+### Common Error Codes
+- 400 Bad Request: Invalid input data
+- 401 Unauthorized: Missing or invalid authentication
+- 403 Forbidden: Not allowed to access the resource
+- 404 Not Found: Resource not found
+- 500 Internal Server Error: Server-side error
 
-### Tasks Table
-```sql
-CREATE TABLE tasks (
-    id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    date DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    category_id INT NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-);
-```
-
-## Authentication
-- All task endpoints require a valid JWT token
-- Token expires after 24 hours
-- Token must be included in the Authorization header as a Bearer token
-- Invalid or expired tokens will receive a 401 Unauthorized response
+## Notes
+1. All timestamps are in MySQL DATETIME format (YYYY-MM-DD HH:MM:SS)
+2. Task priority can be: "low", "medium", "high"
+3. Task status can be: "pending", "in_progress", "completed"
+4. The JWT token expires after 24 hours
